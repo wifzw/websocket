@@ -1,57 +1,189 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <!--
+        Author: @Kauan Motta
+        Data: 30/jul/2021
+        Project: Websocket
+    -->
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+    <title>ChatLiver - Runtime</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"
+            integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg"
+            crossorigin="anonymous"></script>
     <script>
         const socket = io('http://localhost:3333', {
             transports: ['websocket']
         })
 
-        socket.on('teste', (res) => {
-            escreverMensagemEmTela(res.usuario, res.mensagem)
+
+        socket.on('receivedMessage', (res) => {
+            escreverMensagemEmTela(res)
         })
+
+        socket.on('previousMessages', mensagens => {
+            if(mensagens.length) {
+                for (mensagem of mensagens) {
+                    escreverMensagemEmTela(mensagem)
+                }
+            } else {
+                console.log('mensagens => ', mensagens)
+            }
+
+        })
+
 
         function enviar() {
             const usuario = document.querySelector('#usuario').value
             const mensagem = document.querySelector('#mensagem').value
 
-            if(usuario !== '' && mensagem !== '') {
-                socket.emit('teste', {
-                    usuario, mensagem
-                })
 
-                document.querySelector('#usuario').value = ''
+            if (usuario !== '' && mensagem !== '') {
+                escreverMensagemEmTela({ id: null, usuario: usuario, mensagem: mensagem, eu: true})
+
+                socket.emit('SendMessage', { id: null, usuario: usuario, mensagem: mensagem })
+
                 document.querySelector('#mensagem').value = ''
-
-                escreverMensagemEmTela('EU', mensagem)
             } else {
                 return
             }
         }
 
-        function escreverMensagemEmTela(usuario, mensagem) {
+        function excluir() {
+
+            // console.log('usuario => ', data.usuario)
+            // console.log('mensagem => ', data.mensagem)
+            // console.log('id => ', data.id)
+            socket.emit('deleteMessage')
+        }
+
+
+        function escreverMensagemEmTela(data) {
+            console.log(data)
+
+
+
             let mensagemHtml = document.querySelector('#mensagens').innerHTML;
 
-            mensagemHtml += `<p><strong>${usuario}</strong> - ${mensagem}</p>`;
-
+            mensagemHtml += `<div class="row mb-4 d-flex justify-content-between">
+                                <div class="col-auto d-flex ml-2">
+                                    <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" class="avatar">
+                                    <div class="ml-4">
+                                        <p class="mb-0"><strong>${data.eu ? 'EU' : data.usuario}</strong></p>
+                                        <p class="mb-0">${data.mensagem}</p>
+                                    </div>
+                                </div>
+                                 <div class="col-auto p-0 d-flex align-items-center">
+                                    <button type="button" onclick="excluir()" class="btn btn-danger">Excluir Mensagem</button>
+                                 </div>
+                                 </div>`
             document.querySelector('#mensagens').innerHTML = mensagemHtml;
+            //<div class="col-auto p-0 d-flex align-items-center">
+            //  <button type="button" onclick="excluir()" class="btn btn-danger">Excluir Mensagem</button>-->
+            //</div>
+
+            if(data.id !== null) {
+                let header = document.querySelector('#header').innerHTML = `<nav class="navbar sticky-top navbar-dark bg-dark justify-content-end">
+                <div class="d-flex align-items-center">
+                    <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" class="avatar">
+                    <p class="mr-4 ml-4 mb-0" style="color: white;">@${data.usuario}</p>
+                    <p id="socketId" class="mb-0"></p>
+                </div>
+            </nav>`
+
+                document.querySelector('#header').innerHTML = header
+
+                document.querySelector('#socketId').innerHTML = `<strong class="mr-4" style="color: darkslateblue">ID:<span style="color: white; font-size: 15px">${data.id}</span></strong>`
+            }
+
         }
     </script>
-    <title>Document</title>
+    <style lang="css">
+        .avatar {
+            vertical-align: middle;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .logo__main .logo {
+            width: 100%;
+            height: 50vh;
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .ml-4 {
+            margin-left: 10px;
+        }
+
+        .mr-4 {
+            margin-right: 20px;
+        }
+
+    </style>
 </head>
 <body>
-   <input id="usuario" placeholder="Informar o usuário" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+<header id="header"></header>
+<div class="container" style="height: calc(100% - 66px)">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center mt-3">
+            <div class="logo__main">
+                <img src="data:image/png;base64,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" class="logo">
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <div>
+                <h1>Chat Anônimo - Runtime</h1>
+            </div>
+        </div>
+        <div class="col-12 mb-4">
+            <form>
+                <div class="form-row">
+                    <div class="col-12 mt-3">
+                        <input id="usuario" type="text" class="form-control" placeholder="Qual é seu nome? 🧐">
+                    </div>
+                    <div class="col-12 mt-3">
+                        <textarea id="mensagem" class="form-control" placeholder="Digite sua mensagem... 🤗" rows="3"></textarea>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button type="button" onclick="enviar()" class="btn btn-primary">Enviar</button>
+                        <button type="button" onclick="reset()" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-    <hr />
-   <textarea id="mensagem"></textarea>
-   <br />
-   <button onclick="enviar()">ENVIAR</button>
-   <hr />
-   <h3>MENSAGENS</h3>
-   <div id="mensagens"></div>
+        <div class="col-12">
+<!--            <div class="d-flex justify-content-center">-->
+<!--                <h2>Histórico de Conversa</h2>-->
+<!--            </div>-->
+            <div class="card">
+                <div class="card-body">
+                    <div class="col-12 mt-3">
+                        <div id="mensagens" class="row"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--        <input id="usuario" placeholder="Informar o usuário"/>-->
+        <!--        <hr/>-->
+        <!--        <textarea id="mensagem"></textarea>-->
+        <!--        <br/>-->
+        <!--        <button onclick="enviar()">ENVIAR</button>-->
+        <!--        <hr/>-->
+        <!--        <h3>MENSAGENS</h3>-->
+        <!--        <div id="mensagens"></div>-->
+    </div>
+</div><!-- Container -->
 </body>
 </html>
