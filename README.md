@@ -19,7 +19,7 @@ yarn dev
 
 ## Author
 
-👤 **wifz <wifzg0d@gmail.com>**
+👤 **wifz**
 
 * Website: linkedin.com/in/kauan-motta/
 * Github: [@wifzw](https://github.com/wifzw)
