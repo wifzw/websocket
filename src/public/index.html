@@ -61,6 +61,12 @@
             socket.emit('deleteMessage')
         }
 
+        function reset() {
+            document.querySelector('#mensagem').value = ''
+            document.querySelector('#usuario').focus()
+
+        }
+
 
         function escreverMensagemEmTela(data) {
             console.log(data)
@@ -163,9 +169,6 @@
         </div>
 
         <div class="col-12">
-<!--            <div class="d-flex justify-content-center">-->
-<!--                <h2>Histórico de Conversa</h2>-->
-<!--            </div>-->
             <div class="card">
                 <div class="card-body">
                     <div class="col-12 mt-3">
@@ -174,15 +177,6 @@
                 </div>
             </div>
         </div>
-
-        <!--        <input id="usuario" placeholder="Informar o usuário"/>-->
-        <!--        <hr/>-->
-        <!--        <textarea id="mensagem"></textarea>-->
-        <!--        <br/>-->
-        <!--        <button onclick="enviar()">ENVIAR</button>-->
-        <!--        <hr/>-->
-        <!--        <h3>MENSAGENS</h3>-->
-        <!--        <div id="mensagens"></div>-->
     </div>
 </div><!-- Container -->
 </body>
