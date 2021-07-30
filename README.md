@@ -12,6 +12,7 @@
 
 ## Install
 
+Yarn
 ```sh
 yarn dev
 ```
