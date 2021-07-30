@@ -20,6 +20,8 @@ SSH: gitclone git@github.com:wifzw/websocket.git
 
 Depois do repositório clonado:
 
+Execute dentro da pasta do projeto:
+
 ``` 
   yarn dev
 ```
