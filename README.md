@@ -1,6 +1,6 @@
 <h1 align="center">Websocket Projeto 👋</h1>
 <p>
-  <a href="https://www.npmjs.com/package/websocket" target="_blank">
+  <a href="https://yarnpkg.com/package/websocket" target="_blank">
     <img alt="Version" src="https://img.shields.io/npm/v/websocket.svg">
   </a>
   <a href="#" target="_blank">
